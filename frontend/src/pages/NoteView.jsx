@@ -30,7 +30,7 @@ export default function NoteView() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
-      navigate("/notes");
+      navigate("/app/notes");
     },
   });
 
@@ -52,7 +52,7 @@ export default function NoteView() {
   return (
     <>
       <div className="topbar">
-        <button className="btn btn-ghost" onClick={() => navigate("/notes")} style={{ padding: "6px 10px" }}>
+        <button className="btn btn-ghost" onClick={() => navigate("/app/notes")} style={{ padding: "6px 10px" }}>
           ← Notes
         </button>
         <div className="topbar-actions">
@@ -70,7 +70,7 @@ export default function NoteView() {
           >
             {note.favorite ? "★ Fav" : "☆ Fav"}
           </button>
-          <button className="btn" onClick={() => navigate(`/notes/${id}/edit`)}>
+          <button className="btn" onClick={() => navigate(`/app/notes/${id}/edit`)}>
             Edit
           </button>
           <button
@@ -126,7 +126,7 @@ export default function NoteView() {
                 {note.links.map((link) => (
                   <Link
                     key={link.id}
-                    to={`/notes/${link.id}`}
+                    to={`/app/notes/${link.id}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

@@ -56,7 +56,7 @@ export default function NoteEdit() {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
       const noteId = isEditing ? id : res.note.id;
-      navigate(`/notes/${noteId}`);
+      navigate(`/app/notes/${noteId}`);
     },
     onError: (err) => setError(err.message),
   });
@@ -78,7 +78,7 @@ export default function NoteEdit() {
       <div className="topbar">
         <button
           className="btn btn-ghost"
-          onClick={() => navigate(isEditing ? `/notes/${id}` : "/notes")}
+          onClick={() => navigate(isEditing ? `/app/notes/${id}` : "/app/notes")}
           style={{ padding: "6px 10px" }}
         >
           ← {isEditing ? "Back" : "Notes"}

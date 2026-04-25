@@ -46,7 +46,7 @@ async function syncTags(noteId, userId, tagNames = []) {
       tag = { id: res.lastInsertRowid };
     }
 
-    await db.prepare("INSERT OR IGNORE INTO note_tags (note_id, tag_id) VALUES (?, ?)")
+    await db.prepare("INSERT INTO note_tags (note_id, tag_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
       .run(noteId, tag.id);
   }
 }
@@ -133,7 +133,7 @@ router.patch("/:id", asyncHandler(async (req, res, next) => {
     if (data.favorite !== undefined) { fields.push("favorite = ?"); params.push(data.favorite ? 1 : 0); }
 
     if (fields.length > 0) {
-      fields.push("updated_at = datetime('now')");
+      fields.push("updated_at = CURRENT_TIMESTAMP");
       params.push(req.params.id);
       await db.prepare(`UPDATE notes SET ${fields.join(", ")} WHERE id = ?`).run(...params);
     }
@@ -172,7 +172,7 @@ router.post("/:id/links", asyncHandler(async (req, res) => {
 
   if (!source || !target) return res.status(404).json({ error: "Note not found" });
 
-  await db.prepare("INSERT OR IGNORE INTO note_links (source_id, target_id) VALUES (?, ?)").run(
+  await db.prepare("INSERT INTO note_links (source_id, target_id) VALUES (?, ?) ON CONFLICT DO NOTHING").run(
     req.params.id,
     targetId
   );

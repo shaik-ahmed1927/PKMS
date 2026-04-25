@@ -2,6 +2,7 @@
 // Track books, courses, videos etc. Update progress inline.
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api";
 import Modal from "../components/Modal";
@@ -105,7 +106,9 @@ export default function Materials() {
             {filtered.map((m) => (
               <div key={m.id} className="progress-item">
                 <div className="progress-header">
-                  <span className="progress-name">{m.title}</span>
+                  <Link to={`/app/materials/${m.id}`} className="progress-name" style={{ textDecoration: "none", color: "var(--text)" }}>
+                    {m.title}
+                  </Link>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <span className="progress-pct">{m.progress}%</span>
                     <button className="btn btn-ghost" style={{ padding: "3px 8px", fontSize: 12 }} onClick={() => openEdit(m)}>

@@ -16,6 +16,7 @@ const materialRoutes  = require("./routes/materials");
 const tagsRoutes      = require("./routes/tags");
 const searchRoutes    = require("./routes/search");
 const statsRoutes     = require("./routes/stats");
+const aiRoutes        = require("./routes/ai");
 const { errorHandler } = require("./middleware/errors");
 
 const app  = express();
@@ -60,6 +61,7 @@ app.use("/api/materials", materialRoutes);
 app.use("/api/tags",      tagsRoutes);
 app.use("/api/search",    searchRoutes);
 app.use("/api/stats",     statsRoutes);
+app.use("/api/ai",        aiRoutes);
 
 // ─── Health check ───────────────────────────────────────────────────────────
 
@@ -88,3 +90,4 @@ ready.then(() => {
 });
 
 module.exports = app;
+

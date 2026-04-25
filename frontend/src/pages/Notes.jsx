@@ -43,7 +43,7 @@ export default function Notes() {
       <div className="topbar">
         <span className="page-title">Notes</span>
         <div className="topbar-actions">
-          <button className="btn btn-primary" onClick={() => navigate("/notes/new")}>
+          <button className="btn btn-primary" onClick={() => navigate("/app/notes/new")}>
             + New note
           </button>
         </div>
@@ -71,7 +71,7 @@ export default function Notes() {
               {tab === "all" ? "Create your first note." : `No ${tab} notes yet.`}
             </div>
             {tab === "all" && (
-              <button className="btn btn-primary" onClick={() => navigate("/notes/new")}>
+              <button className="btn btn-primary" onClick={() => navigate("/app/notes/new")}>
                 + New note
               </button>
             )}
@@ -80,7 +80,7 @@ export default function Notes() {
           <table className="list-table">
             <tbody>
               {filtered.map((note) => (
-                <tr key={note.id} onClick={() => navigate(`/notes/${note.id}`)}>
+                <tr key={note.id} onClick={() => navigate(`/app/notes/${note.id}`)}>
                   <td>
                     {Boolean(note.pinned) && (
                       <span style={{ marginRight: 8, color: "var(--text3)", fontSize: 11 }}>●</span>

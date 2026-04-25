@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 
 const NAV = [
   {
-    to: "/dashboard",
+    to: "/app/dashboard",
     label: "Dashboard",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -19,7 +19,7 @@ const NAV = [
     ),
   },
   {
-    to: "/notes",
+    to: "/app/notes",
     label: "Notes",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -28,7 +28,7 @@ const NAV = [
     ),
   },
   {
-    to: "/bookmarks",
+    to: "/app/bookmarks",
     label: "Bookmarks",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -37,7 +37,7 @@ const NAV = [
     ),
   },
   {
-    to: "/materials",
+    to: "/app/materials",
     label: "Materials",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -47,7 +47,7 @@ const NAV = [
     ),
   },
   {
-    to: "/search",
+    to: "/app/search",
     label: "Search",
     icon: (
       <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -68,7 +68,7 @@ export default function Layout() {
 
   async function handleLogout() {
     await logout();
-    navigate("/login");
+    navigate("/");
   }
 
   return (

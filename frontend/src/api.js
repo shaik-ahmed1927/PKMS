@@ -28,8 +28,9 @@ async function request(path, options = {}) {
     } catch (_) {}
     isRefreshing = false;
     
-    // Prevent infinite redirect loop if already on auth pages
-    if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+    // Prevent infinite redirect loop if already on public pages
+    const publicPages = ["/", "/login", "/register", "/docs", "/community", "/blog"];
+    if (!publicPages.includes(window.location.pathname)) {
       window.location.href = "/login";
     }
     throw new Error("Authentication failed");

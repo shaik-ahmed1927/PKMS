@@ -24,6 +24,8 @@ const MaterialSchema = z.object({
   total_units:  z.number().int().min(1),
   current_unit: z.number().int().min(0).default(0),
   unit_label:   z.string().default("chapter"),
+  url:          z.string().default(""),
+  notes:        z.string().default(""),
 });
 
 router.get("/", asyncHandler(async (req, res) => {
@@ -46,10 +48,10 @@ router.get("/:id", asyncHandler(async (req, res) => {
 router.post("/", asyncHandler(async (req, res, next) => {
   try {
     const data = MaterialSchema.parse(req.body);
-    const result = await db.prepare(`INSERT INTO materials (user_id, title, type, total_units, current_unit, unit_label)
-         VALUES (?, ?, ?, ?, ?, ?)`
+    const result = await db.prepare(`INSERT INTO materials (user_id, title, type, total_units, current_unit, unit_label, url, notes)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
       )
-      .run(req.user.id, data.title, data.type, data.total_units, data.current_unit, data.unit_label);
+      .run(req.user.id, data.title, data.type, data.total_units, data.current_unit, data.unit_label, data.url, data.notes);
     const m = await db.prepare("SELECT * FROM materials WHERE id = ?").get(result.lastInsertRowid);
     res.status(201).json({ material: withProgress(m) });
   } catch (err) {
@@ -72,9 +74,11 @@ router.patch("/:id", asyncHandler(async (req, res, next) => {
     if (data.total_units  !== undefined) { fields.push("total_units = ?");  params.push(data.total_units); }
     if (data.current_unit !== undefined) { fields.push("current_unit = ?"); params.push(data.current_unit); }
     if (data.unit_label   !== undefined) { fields.push("unit_label = ?");   params.push(data.unit_label); }
+    if (data.url          !== undefined) { fields.push("url = ?");          params.push(data.url); }
+    if (data.notes        !== undefined) { fields.push("notes = ?");        params.push(data.notes); }
 
     if (fields.length > 0) {
-      fields.push("updated_at = datetime('now')");
+      fields.push("updated_at = CURRENT_TIMESTAMP");
       params.push(req.params.id);
       await db.prepare(`UPDATE materials SET ${fields.join(", ")} WHERE id = ?`).run(...params);
     }

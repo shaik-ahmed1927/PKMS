@@ -30,9 +30,21 @@ async function applySchema() {
     CREATE TABLE IF NOT EXISTS note_links (source_id INTEGER NOT NULL REFERENCES notes(id) ON DELETE CASCADE, target_id INTEGER NOT NULL REFERENCES notes(id) ON DELETE CASCADE, PRIMARY KEY (source_id, target_id));
     CREATE TABLE IF NOT EXISTS bookmarks (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, url TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);
     CREATE TABLE IF NOT EXISTS bookmark_tags (bookmark_id INTEGER NOT NULL REFERENCES bookmarks(id) ON DELETE CASCADE, tag_id INTEGER NOT NULL REFERENCES tags(id) ON DELETE CASCADE, PRIMARY KEY (bookmark_id, tag_id));
-    CREATE TABLE IF NOT EXISTS materials (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'book', total_units INTEGER NOT NULL DEFAULT 1, current_unit INTEGER NOT NULL DEFAULT 0, unit_label TEXT NOT NULL DEFAULT 'chapter', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);
+    CREATE TABLE IF NOT EXISTS materials (id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, type TEXT NOT NULL DEFAULT 'book', total_units INTEGER NOT NULL DEFAULT 1, current_unit INTEGER NOT NULL DEFAULT 0, unit_label TEXT NOT NULL DEFAULT 'chapter', url TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);
   `;
   await pool.query(schema);
+
+  // Safely add columns if they don't exist
+  try {
+    await pool.query("ALTER TABLE materials ADD COLUMN url TEXT NOT NULL DEFAULT ''");
+  } catch (err) {
+    // Ignore error if column already exists
+  }
+  try {
+    await pool.query("ALTER TABLE materials ADD COLUMN notes TEXT NOT NULL DEFAULT ''");
+  } catch (err) {
+    // Ignore error if column already exists
+  }
 }
 
 function prepare(sql) {
@@ -51,9 +63,14 @@ function prepare(sql) {
     },
     async run(...params) {
       let finalSql = pgSql;
+      const upperSql = pgSql.trim().toUpperCase();
       // SQLite returns lastInsertRowid. PostgreSQL needs RETURNING id.
-      if (pgSql.trim().toUpperCase().startsWith("INSERT") && !pgSql.toUpperCase().includes("RETURNING")) {
-        finalSql += " RETURNING id";
+      if (upperSql.startsWith("INSERT") && !upperSql.includes("RETURNING")) {
+        if (!upperSql.includes("INTO NOTE_TAGS") && 
+            !upperSql.includes("INTO BOOKMARK_TAGS") && 
+            !upperSql.includes("INTO NOTE_LINKS")) {
+          finalSql += " RETURNING id";
+        }
       }
       
       const res = await pool.query(finalSql, params);

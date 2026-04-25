@@ -29,7 +29,7 @@ async function syncTags(bookmarkId, userId, tagNames = []) {
       const res = await db.prepare("INSERT INTO tags (user_id, name) VALUES (?, ?)").run(userId, trimmed);
       tag = { id: res.lastInsertRowid };
     }
-    await db.prepare("INSERT OR IGNORE INTO bookmark_tags (bookmark_id, tag_id) VALUES (?, ?)").run(bookmarkId, tag.id);
+    await db.prepare("INSERT INTO bookmark_tags (bookmark_id, tag_id) VALUES (?, ?) ON CONFLICT DO NOTHING").run(bookmarkId, tag.id);
   }
 }
 
@@ -88,7 +88,7 @@ router.patch("/:id", asyncHandler(async (req, res, next) => {
     if (data.description !== undefined) { fields.push("description = ?"); params.push(data.description); }
 
     if (fields.length > 0) {
-      fields.push("updated_at = datetime('now')");
+      fields.push("updated_at = CURRENT_TIMESTAMP");
       params.push(req.params.id);
       await db.prepare(`UPDATE bookmarks SET ${fields.join(", ")} WHERE id = ?`).run(...params);
     }

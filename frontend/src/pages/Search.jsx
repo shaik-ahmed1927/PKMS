@@ -30,9 +30,9 @@ export default function Search() {
   });
 
   function handleClick(item) {
-    if (item.type === "note")     navigate(`/notes/${item.id}`);
+    if (item.type === "note")     navigate(`/app/notes/${item.id}`);
     if (item.type === "bookmark") window.open(item.url, "_blank", "noopener");
-    if (item.type === "material") navigate("/materials");
+    if (item.type === "material") navigate("/app/materials");
   }
 
   return (

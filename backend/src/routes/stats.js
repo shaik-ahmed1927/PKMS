@@ -12,11 +12,11 @@ router.use(requireAuth);
 router.get("/", asyncHandler(async (req, res) => {
   const uid = req.user.id;
 
-  const notes     = (await db.prepare("SELECT COUNT(*) as c FROM notes     WHERE user_id = ?").get(uid)).c;
-  const pinned    = (await db.prepare("SELECT COUNT(*) as c FROM notes     WHERE user_id = ? AND pinned = 1").get(uid)).c;
-  const bookmarks = (await db.prepare("SELECT COUNT(*) as c FROM bookmarks WHERE user_id = ?").get(uid)).c;
-  const materials = (await db.prepare("SELECT COUNT(*) as c FROM materials WHERE user_id = ?").get(uid)).c;
-  const tags      = (await db.prepare("SELECT COUNT(*) as c FROM tags      WHERE user_id = ?").get(uid)).c;
+  const notes     = (await db.prepare("SELECT COUNT(*)::int as c FROM notes     WHERE user_id = ?").get(uid)).c;
+  const pinned    = (await db.prepare("SELECT COUNT(*)::int as c FROM notes     WHERE user_id = ? AND pinned = 1").get(uid)).c;
+  const bookmarks = (await db.prepare("SELECT COUNT(*)::int as c FROM bookmarks WHERE user_id = ?").get(uid)).c;
+  const materials = (await db.prepare("SELECT COUNT(*)::int as c FROM materials WHERE user_id = ?").get(uid)).c;
+  const tags      = (await db.prepare("SELECT COUNT(*)::int as c FROM tags      WHERE user_id = ?").get(uid)).c;
 
   const recentActivity = await db.prepare(`SELECT id, title, updated_at as date, 'note' as type FROM notes WHERE user_id = ?
        UNION ALL

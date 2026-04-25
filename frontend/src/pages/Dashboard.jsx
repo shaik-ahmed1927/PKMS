@@ -43,7 +43,7 @@ export default function Dashboard() {
       <div className="topbar">
         <span className="page-title">Dashboard</span>
         <div className="topbar-actions">
-          <button className="btn btn-primary" onClick={() => navigate("/notes/new")}>
+          <button className="btn btn-primary" onClick={() => navigate("/app/notes/new")}>
             + New note
           </button>
         </div>
@@ -74,25 +74,26 @@ export default function Dashboard() {
         {/* Recent notes */}
         <div className="section-header">
           <span className="section-title">Recent notes</span>
-          <Link to="/notes" className="see-all">See all →</Link>
+          <Link to="/app/notes" className="see-all">See all →</Link>
         </div>
 
         {recentNotes.length === 0 ? (
-          <div style={{ marginBottom: 32 }}>
-            <div className="empty-state" style={{ padding: "32px 0" }}>
-              <div className="empty-state-title">No notes yet</div>
-              <div className="empty-state-desc">Create your first note to get started.</div>
-              <button className="btn btn-primary" onClick={() => navigate("/notes/new")}>
-                + New note
-              </button>
-            </div>
+          <div className="empty-state">
+            <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            </svg>
+            <div className="empty-state-title">No notes yet</div>
+            <div className="empty-state-desc">Start capturing your thoughts and ideas</div>
+            <button className="btn btn-primary" onClick={() => navigate("/app/notes/new")}>
+              + Create your first note
+            </button>
           </div>
         ) : (
           <div className="notes-grid">
             {recentNotes.map((note) => (
               <Link
                 key={note.id}
-                to={`/notes/${note.id}`}
+                to={`/app/notes/${note.id}`}
                 className={`note-card${note.pinned ? " pinned" : ""}`}
               >
                 <div className="note-card-title">{note.title}</div>
@@ -116,8 +117,13 @@ export default function Dashboard() {
               <span className="section-title">Recent activity</span>
             </div>
             {(stats?.recentActivity ?? []).length === 0 ? (
-              <div style={{ color: "var(--text3)", fontSize: 13, padding: "20px 0" }}>
-                Nothing yet — start adding notes or bookmarks.
+              <div className="empty-state">
+                <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <div className="empty-state-title">No recent activity</div>
+                <div className="empty-state-desc">Nothing yet — start adding notes or bookmarks.</div>
               </div>
             ) : (
               stats.recentActivity.map((item, i) => (
@@ -136,11 +142,19 @@ export default function Dashboard() {
           <div>
             <div className="section-header">
               <span className="section-title">Learning progress</span>
-              <Link to="/materials" className="see-all">See all →</Link>
+              <Link to="/app/materials" className="see-all">See all →</Link>
             </div>
             {inProgressMats.length === 0 ? (
-              <div style={{ color: "var(--text3)", fontSize: 13, padding: "20px 0" }}>
-                No materials in progress.
+              <div className="empty-state">
+                <svg className="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                </svg>
+                <div className="empty-state-title">Nothing being tracked yet</div>
+                <div className="empty-state-desc">Add books, courses or articles you are working through</div>
+                <button className="btn btn-primary" onClick={() => navigate("/app/materials")}>
+                  + Add learning material
+                </button>
               </div>
             ) : (
               inProgressMats.map((m) => (

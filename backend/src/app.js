@@ -25,7 +25,22 @@ const PORT = process.env.PORT || 5000;
 // ─── Core middleware ────────────────────────────────────────────────────────
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigin = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : "http://localhost:5173";
+    
+    // Allow localhost, exact FRONTEND_URL, or any Vercel deployment URL to prevent CORS issues
+    if (
+      origin.startsWith("http://localhost:") || 
+      origin === allowedOrigin ||
+      origin.includes("vercel.app")
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());

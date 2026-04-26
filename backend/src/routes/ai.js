@@ -28,7 +28,8 @@ router.post("/summarize-url", asyncHandler(async (req, res) => {
         const transcript = await YoutubeTranscript.fetchTranscript(url);
         textContent = transcript.map(t => t.text).join(" ");
       } catch (err) {
-        return res.status(400).json({ error: "Could not fetch transcript for this YouTube video. It may not have captions enabled." });
+        console.warn("Transcript fetch failed, falling back to Gemini Search Grounding:", err.message);
+        textContent = null; // Signal that we should use Search Grounding
       }
     } else {
       const response = await fetch(url);
@@ -48,28 +49,41 @@ router.post("/summarize-url", asyncHandler(async (req, res) => {
       textContent = extractedText.replace(/\s+/g, ' ').trim();
     }
 
-    if (!textContent || textContent.length < 50) {
+    if (textContent !== null && textContent.length < 50) {
       return res.status(400).json({ error: "Could not extract enough text from the URL to summarize." });
     }
 
     // Truncate to avoid exceeding token limits (rough approximation)
     const MAX_CHARS = 50000;
-    if (textContent.length > MAX_CHARS) {
+    if (textContent !== null && textContent.length > MAX_CHARS) {
       textContent = textContent.substring(0, MAX_CHARS) + "... [content truncated]";
     }
 
     // 3. Send to Gemini for summarization
-    const prompt = `Please provide a clear, comprehensive, and well-structured summary of the following web page content. 
+    let prompt;
+    let tools = undefined;
+
+    if (textContent !== null) {
+      prompt = `Please provide a clear, comprehensive, and well-structured summary of the following web page content. 
 This summary will be saved as notes in a Personal Knowledge Management System.
 Format the output nicely using Markdown (bullet points, headers, etc. if appropriate).
 
 CONTENT TO SUMMARIZE:
 ---------------------
 ${textContent}`;
+    } else {
+      // Fallback for YouTube videos when scraping is blocked
+      prompt = `Please provide a clear, comprehensive, and well-structured summary of the following YouTube video.
+URL: ${url}
+Use your Google Search tool to find information, transcripts, or summaries about this specific video and provide a detailed summary.
+Format the output nicely using Markdown (bullet points, headers, etc. if appropriate).`;
+      tools = [{ googleSearch: {} }];
+    }
 
     const aiResponse = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
+      tools: tools,
     });
 
     const summary = aiResponse.text;

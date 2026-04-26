@@ -84,8 +84,8 @@ app.use(errorHandler);
 
 const { ready } = require("./db");
 ready.then(() => {
-  app.listen(PORT, () => {
-    console.log(`\n  PKMS backend running on http://localhost:${PORT}\n`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n  PKMS backend running on http://0.0.0.0:${PORT}\n`);
   });
 });
 

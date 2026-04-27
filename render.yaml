@@ -10,7 +10,7 @@ databases:
 services:
   - type: web
     name: pkms-backend
-    env: node
+    runtime: node
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
@@ -26,7 +26,7 @@ services:
         value: production
       # We will need to update this with the actual Vercel URL once deployed
       - key: FRONTEND_URL
-        value: "https://your-vercel-app-url.vercel.app"
+        value: 'https://your-vercel-app-url.vercel.app'
       # Requires manual entry in the Render Dashboard after deployment
       - key: GEMINI_API_KEY
         sync: false

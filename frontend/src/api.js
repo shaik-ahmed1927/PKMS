@@ -13,7 +13,7 @@ async function request(path, options = {}) {
   });
 
   // Silent token refresh on 401
-  if (res.status === 401 && !isRefreshing && path !== "/auth/refresh") {
+  if (res.status === 401 && !isRefreshing && path !== "/auth/login" && path !== "/auth/refresh") {
     isRefreshing = true;
     try {
       const refresh = await fetch(`${BASE}/auth/refresh`, {
@@ -33,7 +33,7 @@ async function request(path, options = {}) {
     if (!publicPages.includes(window.location.pathname)) {
       window.location.href = "/login";
     }
-    throw new Error("Authentication failed");
+    throw new Error("Session expired. Please login again.");
   }
 
   if (!res.ok) {

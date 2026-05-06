@@ -10,13 +10,23 @@ let resolveReady;
 const ready = new Promise((res) => { resolveReady = res; });
 
 async function initDb() {
-  try {
-    await applySchema();
-    resolveReady();
-    console.log("  Database connected successfully to PostgreSQL");
-  } catch (err) {
-    console.error("  Database init failed:", err);
-    process.exit(1);
+  let retries = 5;
+  while (retries > 0) {
+    try {
+      await applySchema();
+      resolveReady();
+      console.log("  Database connected successfully to PostgreSQL");
+      return;
+    } catch (err) {
+      console.error(`  Database init failed. Retries left: ${retries - 1}. Waiting 5 seconds...`, err.message);
+      retries -= 1;
+      if (retries === 0) {
+        console.error("  Failed to connect to database after multiple attempts.");
+        process.exit(1);
+      }
+      // Wait 5 seconds before retrying (Render free DB wake up time)
+      await new Promise(res => setTimeout(res, 5000));
+    }
   }
 }
 
